@@ -5,6 +5,7 @@ using Orlenko.EventSourcing.Example.Contracts.Commands;
 using Orlenko.EventSourcing.Example.Contracts.Events;
 using Orlenko.EventSourcing.Example.Core.Aggregates;
 using Microsoft.Extensions.Logging;
+using Orlenko.EventSourcing.Example.Contracts.Models;
 
 namespace Orlenko.EventSourcing.Example.Core.CommandHandlers
 {
@@ -12,19 +13,24 @@ namespace Orlenko.EventSourcing.Example.Core.CommandHandlers
     {
         private readonly AggregateRoot root;
 
-        private readonly IEventsStore eventStore;
-
         private readonly IEventsPublisher publisher;
 
         private readonly ILogger<DefaultCommandHandler> logger;
 
-        public DefaultCommandHandler(AggregateRoot root, IEventsStore eventStore, IEventsPublisher publisher, ILogger<DefaultCommandHandler> logger)
+        public DefaultCommandHandler(AggregateRoot root, IEventsPublisher publisher, ILogger<DefaultCommandHandler> logger)
         {
             this.root = root;
-            this.eventStore = eventStore;
             this.publisher = publisher;
         }
 
+        /// <summary>
+        /// Handles all types of command asynchronously.
+        /// </summary>
+        /// <param name="command">The command.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">If command is null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">If command has unsupported type</exception>
+        /// <exception cref="Exception">In case of more generic exception</exception>
         public async Task HandleAsync(BaseItemCommand command)
         {
             try
@@ -50,16 +56,26 @@ namespace Orlenko.EventSourcing.Example.Core.CommandHandlers
                         throw new ArgumentOutOfRangeException(nameof(command));
                 }
 
-                var successfullApply = await this.root.ApplyEventAsync(evt);
-                if (successfullApply)
+                var applicationResult = await this.root.ApplyEventAsync(evt);
+                switch(applicationResult)
                 {
-                    await this.eventStore.AddEventAsync(evt);
-                    await this.publisher.PublishAsync(evt);
+                    case SuccessAggregateApplicationResult success:
+                        // Commit staged events might happen here
+                        // await this.root.CommitAsync();
+                        // Success result might have a list of Staged events in more complex implementation
+                        await this.publisher.PublishAsync(evt);
+                        break;
+
+                    case FailedAggregateApplicationResult failed:
+                        throw new Exception(failed.Error);
+                    
+                    default:
+                        throw new Exception($"Unsupported aggregate application result type {applicationResult.GetType().Name}");
                 }
             }
             catch (Exception e)
             {
-
+                this.logger.LogError(e, $"Failed to process command {command.GetType().Name}");
                 throw;
             }
         }

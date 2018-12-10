@@ -1,66 +1,73 @@
 ﻿using Orlenko.EventSourcing.Example.Contracts.Abstractions;
 using Orlenko.EventSourcing.Example.Contracts.Events;
+using Orlenko.EventSourcing.Example.Contracts.Models;
 using System.Threading.Tasks;
 
 namespace Orlenko.EventSourcing.Example.Core.Aggregates
 {
     public class AggregateRoot
     {
-        private readonly IAggregateRepository aggregatesRepository;
+        private readonly IAggregateRepository<ItemAggregate> aggregatesRepository;
 
-        public AggregateRoot(IAggregateRepository aggregatesRepository)
+        public AggregateRoot(IAggregateRepository<ItemAggregate> aggregatesRepository)
         {
             this.aggregatesRepository = aggregatesRepository;
         }
 
-        public async Task<bool> ApplyEventAsync(BaseEvent evt)
+        public async Task<AggregateApplicationResult> ApplyEventAsync(BaseEvent evt)
         {
             // Lets have a constraint for item Name uniqueness
-
+            ItemAggregate aggregate;
             switch (evt)
             {
                 case ItemCreatedEvent created:
                     var itemExists = await aggregatesRepository.ExistsAsync(created.Name);
                     if (itemExists)
                     {
-                        return false;
+                        return new FailedAggregateApplicationResult("Item with the same name already exists.");
                     }
 
-                    var newAggregate = new ItemAggregate(created.Id);
-                    newAggregate.ApplyEvent(created);
-                    await aggregatesRepository.CreateAsync(newAggregate);
-                    return true;
+                    aggregate = new ItemAggregate(created.Id);
+                    break;
 
                 case ItemDeletedEvent deleted:
-                    var itemForDeletion = await aggregatesRepository.GetByIdAsync(deleted.Id);
-                    if (itemForDeletion == null)
+                    aggregate = await aggregatesRepository.GetByIdAsync(deleted.Id);
+                    if (aggregate == null)
                     {
-                        return false;
+                        return new FailedAggregateApplicationResult("Specified item was not found.");
                     }
-
-                    itemForDeletion.ApplyEvent(deleted);
-                    await aggregatesRepository.DeleteAsync(itemForDeletion);
-                    return true;
+                    
+                    break;
 
                 case ItemUpdatedEvent updated:
-                    var itemForUpdate = await aggregatesRepository.GetByIdAsync(updated.Id);
-                    if (itemForUpdate == null)
+                    aggregate = await aggregatesRepository.GetByIdAsync(updated.Id);
+                    if (aggregate == null)
                     {
-                        return false;
+                        return new FailedAggregateApplicationResult("Specified item was not found.");
                     }
 
-                    var itemWithSameName = await aggregatesRepository.ExistsAsync(updated.Name);
-                    if (itemWithSameName)
+                    var itemWithSameNameExists = await aggregatesRepository.ExistsAsync(updated.Name);
+                    if (itemWithSameNameExists)
                     {
-                        return false;
+                        return new FailedAggregateApplicationResult("Item with the same name already exists.");
                     }
-
-                    itemForUpdate.ApplyEvent(updated);
-                    return true;
+                    
+                    break;
 
                 default:
-                    return false;
+                    return new FailedAggregateApplicationResult($"Specified event type {evt.GetType().Name} is not supported");
             }
+
+            var applicationResult = aggregate.ApplyEvent(evt);
+            switch(applicationResult)
+            {
+                case SuccessAggregateApplicationResult success:
+                    // This method might be a root specific, because of several aggregate repositories might be impacted by one event
+                    await aggregatesRepository.CommitChangesAsync(aggregate);
+                    break;
+            }
+            
+            return applicationResult;
         }
     }
 }

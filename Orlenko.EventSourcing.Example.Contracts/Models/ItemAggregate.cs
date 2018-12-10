@@ -1,8 +1,7 @@
 ﻿using Orlenko.EventSourcing.Example.Contracts.Events;
-using Orlenko.EventSourcing.Example.Contracts.Models;
 using System;
 
-namespace Orlenko.EventSourcing.Example.Core.Aggregates
+namespace Orlenko.EventSourcing.Example.Contracts.Models
 {
     public class ItemAggregate : BaseAggregate
     {
@@ -12,17 +11,17 @@ namespace Orlenko.EventSourcing.Example.Core.Aggregates
         {
         }
 
-        public override bool ApplyEvent(BaseEvent evt)
+        public override AggregateApplicationResult ApplyEvent(BaseEvent evt)
         {
             if (evt == null)
             {
-                throw new ArgumentNullException(nameof(evt));    
+                throw new ArgumentNullException(nameof(evt));
             }
 
-            switch(evt)
+            switch (evt)
             {
                 case ItemUpdatedEvent updated:
-                    this.Name = updated.Name;
+                    Name = updated.Name;
                     break;
             }
 

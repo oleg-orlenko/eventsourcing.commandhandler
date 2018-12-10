@@ -4,14 +4,12 @@ using System.Threading.Tasks;
 
 namespace Orlenko.EventSourcing.Example.Contracts.Abstractions
 {
-    public interface IAggregateRepository
+    public interface IAggregateRepository<TAgg> where TAgg : BaseAggregate
     {
-        Task<BaseAggregate> GetByIdAsync(Guid id);
+        Task<TAgg> GetByIdAsync(Guid id);
 
         Task<bool> ExistsAsync(string name);
 
-        Task CreateAsync(BaseAggregate aggregate);
-
-        Task DeleteAsync(BaseAggregate aggregate);
+        Task CommitChangesAsync(TAgg aggregate);
     }
 }
