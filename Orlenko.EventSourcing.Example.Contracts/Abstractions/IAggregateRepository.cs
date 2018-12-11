@@ -11,5 +11,7 @@ namespace Orlenko.EventSourcing.Example.Contracts.Abstractions
         Task<bool> ExistsAsync(string name);
 
         Task CommitChangesAsync(TAgg aggregate);
+
+        Task RollbackChangesAsync(TAgg aggregate);
     }
 }

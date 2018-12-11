@@ -27,5 +27,11 @@ namespace Orlenko.EventSourcing.Example.Contracts.Models
 
             return base.ApplyEvent(evt);
         }
+
+        public override void Rollback()
+        {
+            // Have no idea at the moment what to do here ((
+            base.Rollback();
+        }
     }
 }

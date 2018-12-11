@@ -4,21 +4,22 @@ using System.Collections.Generic;
 
 namespace Orlenko.EventSourcing.Example.Contracts.Models
 {
-    public class BaseAggregate
+    public abstract class BaseAggregate
     {
         public readonly Guid Id;
 
-        private readonly LinkedList<BaseEvent> appliedEvents;
+        protected readonly Queue<BaseEvent> StagedEvents;
+
+        private BaseEvent lastEvent;
 
         public BaseAggregate(Guid id)
         {
             this.Id = id;
-            this.appliedEvents = new LinkedList<BaseEvent>();
+            this.StagedEvents = new Queue<BaseEvent>();
+            this.lastEvent = null;
         }
 
-        public int Version { get; private set; }
-
-        public DateTime LastChanged { get; private set; }
+        private int stagedVersion;
 
         public virtual AggregateApplicationResult ApplyEvent(BaseEvent evt)
         {
@@ -27,16 +28,33 @@ namespace Orlenko.EventSourcing.Example.Contracts.Models
                 throw new ArgumentNullException(nameof(evt));    
             }
 
-            this.Version++;
-            this.LastChanged = evt.EventDate;
-            this.appliedEvents.AddLast(evt);
-
             // I have concerns here, but how the handler would now the version before event appliation ?
-            evt.Version = this.Version;
+            if (evt.Version == 0) // For now this is the definition of a new event
+            {
+                evt.Version = this.stagedVersion++;
+                this.StagedEvents.Enqueue(evt);    
+            }
+            
             // This trick might help, but commit of aggregate's staged events is happenning inside AggregateRoot and not in CommandHandler
             // I dont like the idea of getting aggregate version from AggregateRoot
             // Anyway - TBD
-            return new SuccessAggregateApplicationResult(this.Version); 
+            return new SuccessAggregateApplicationResult(); 
+        }
+
+        public virtual void Commit()
+        {
+            var evt = this.StagedEvents.Dequeue();
+            while(evt != null)
+            {
+                this.lastEvent = evt;
+                evt = this.StagedEvents.Dequeue();
+            }
+        }
+
+        public virtual void Rollback()
+        {
+            this.stagedVersion = this.lastEvent.Version;
+            this.StagedEvents.Clear();
         }
     }
 }

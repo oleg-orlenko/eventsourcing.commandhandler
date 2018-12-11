@@ -61,7 +61,8 @@ namespace Orlenko.EventSourcing.Example.Core.CommandHandlers
                 {
                     case SuccessAggregateApplicationResult success:
                         // Commit staged events might happen here
-                        // await this.root.CommitAsync();
+                        await this.root.CommitAsync();
+                        
                         // Success result might have a list of Staged events in more complex implementation
                         await this.publisher.PublishAsync(evt);
                         break;
@@ -70,11 +71,13 @@ namespace Orlenko.EventSourcing.Example.Core.CommandHandlers
                         throw new Exception(failed.Error);
                     
                     default:
-                        throw new Exception($"Unsupported aggregate application result type {applicationResult.GetType().Name}");
+                        throw new ArgumentOutOfRangeException(nameof(applicationResult));
                 }
             }
             catch (Exception e)
             {
+                await this.root.RollbackAsync();
+
                 this.logger.LogError(e, $"Failed to process command {command.GetType().Name}");
                 throw;
             }
