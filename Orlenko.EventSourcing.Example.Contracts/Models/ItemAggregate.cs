@@ -20,6 +20,10 @@ namespace Orlenko.EventSourcing.Example.Contracts.Models
 
             switch (evt)
             {
+                case ItemCreatedEvent created:
+                    Name = created.Name;
+                    break;
+
                 case ItemUpdatedEvent updated:
                     Name = updated.Name;
                     break;

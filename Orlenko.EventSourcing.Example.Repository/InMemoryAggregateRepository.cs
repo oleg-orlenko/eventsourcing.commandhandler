@@ -1,4 +1,5 @@
 ﻿using Orlenko.EventSourcing.Example.Contracts.Abstractions;
+using Orlenko.EventSourcing.Example.Contracts.Events;
 using Orlenko.EventSourcing.Example.Contracts.Models;
 using System;
 using System.Collections.Concurrent;
@@ -11,9 +12,9 @@ namespace Orlenko.EventSourcing.Example.Repository
     {
         private readonly ConcurrentDictionary<Guid, ItemAggregate> aggregatesCollection;
 
-        private readonly IEventsStore eventsStore;
+        private readonly IEventsStore<BaseItemEvent> eventsStore;
 
-        public InMemoryAggregateRepository(IEventsStore eventsStore)
+        public InMemoryAggregateRepository(IEventsStore<BaseItemEvent> eventsStore)
         {
             this.aggregatesCollection = new ConcurrentDictionary<Guid, ItemAggregate>();
             this.eventsStore = eventsStore;
@@ -21,9 +22,13 @@ namespace Orlenko.EventSourcing.Example.Repository
             // Some injection of initialized aggregatesCollection might happen here as well, to restore the state of application
         }
 
-        public Task CommitChangesAsync(ItemAggregate aggregate)
+        public async Task CommitChangesAsync(ItemAggregate aggregate)
         {
-            throw new NotImplementedException();
+            var stagedEvents = aggregate.GetStagedEvents<BaseItemEvent>();
+            foreach(var evt in stagedEvents)
+            {
+                await this.eventsStore.AddEventAsync(evt);    
+            }
         }
 
         public Task<bool> ExistsAsync(string name)
@@ -47,6 +52,12 @@ namespace Orlenko.EventSourcing.Example.Repository
 
             result = aggregatesCollection[id];
             return Task.FromResult(result);
+        }
+
+        public Task RollbackChangesAsync(ItemAggregate aggregate)
+        {
+            // No idea how to implement this for now
+            throw new NotImplementedException();
         }
     }
 }

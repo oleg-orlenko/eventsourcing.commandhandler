@@ -3,13 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.106
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orlenko.EventSourcing.Example", "Orlenko.EventSourcing.Example\Orlenko.EventSourcing.Example.csproj", "{1965E40F-1636-4E79-8CD7-0BAE95F5AED1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orlenko.EventSourcing.Example", "Orlenko.EventSourcing.Example\Orlenko.EventSourcing.Example.csproj", "{1965E40F-1636-4E79-8CD7-0BAE95F5AED1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orlenko.EventSourcing.Example.Core", "Orlenko.EventSourcing.Example.Core\Orlenko.EventSourcing.Example.Core.csproj", "{E48CAA56-F146-4210-BE09-A7E582183C47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orlenko.EventSourcing.Example.Core", "Orlenko.EventSourcing.Example.Core\Orlenko.EventSourcing.Example.Core.csproj", "{E48CAA56-F146-4210-BE09-A7E582183C47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orlenko.EventSourcing.Example.Repository", "Orlenko.EventSourcing.Example.Repository\Orlenko.EventSourcing.Example.Repository.csproj", "{F1CDEFB1-8A4E-420D-B4ED-1B46383268E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orlenko.EventSourcing.Example.Repository", "Orlenko.EventSourcing.Example.Repository\Orlenko.EventSourcing.Example.Repository.csproj", "{F1CDEFB1-8A4E-420D-B4ED-1B46383268E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orlenko.EventSourcing.Example.Contracts", "Orlenko.EventSourcing.Example.Contracts\Orlenko.EventSourcing.Example.Contracts.csproj", "{AF007B52-31DA-4F11-BAC9-86E66910BCE4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orlenko.EventSourcing.Example.Contracts", "Orlenko.EventSourcing.Example.Contracts\Orlenko.EventSourcing.Example.Contracts.csproj", "{AF007B52-31DA-4F11-BAC9-86E66910BCE4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{89C1B616-7ECB-4A38-A4FB-5B810E0BDAB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts.Tests", "Tests\Contracts.Tests\Contracts.Tests.csproj", "{170B1410-E096-4410-A4C9-62FCD1F1FAC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Tests", "Tests\Core.Tests\Core.Tests.csproj", "{CA1F7008-706F-4427-AAF5-F3B5B5BAB158}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +39,21 @@ Global
 		{AF007B52-31DA-4F11-BAC9-86E66910BCE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF007B52-31DA-4F11-BAC9-86E66910BCE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF007B52-31DA-4F11-BAC9-86E66910BCE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{170B1410-E096-4410-A4C9-62FCD1F1FAC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{170B1410-E096-4410-A4C9-62FCD1F1FAC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{170B1410-E096-4410-A4C9-62FCD1F1FAC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{170B1410-E096-4410-A4C9-62FCD1F1FAC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA1F7008-706F-4427-AAF5-F3B5B5BAB158}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA1F7008-706F-4427-AAF5-F3B5B5BAB158}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA1F7008-706F-4427-AAF5-F3B5B5BAB158}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA1F7008-706F-4427-AAF5-F3B5B5BAB158}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{170B1410-E096-4410-A4C9-62FCD1F1FAC4} = {89C1B616-7ECB-4A38-A4FB-5B810E0BDAB5}
+		{CA1F7008-706F-4427-AAF5-F3B5B5BAB158} = {89C1B616-7ECB-4A38-A4FB-5B810E0BDAB5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C56EC174-F83F-4434-9A56-0EB26306EA91}

@@ -8,7 +8,7 @@ namespace Orlenko.EventSourcing.Example.Contracts.Events
         public readonly string Name;
 
         // Id is here just for deserialization purposes
-        public ItemCreatedEvent(Guid id, string name, string userName, DateTime eventDate) : base(userName, id, eventDate)
+        public ItemCreatedEvent(Guid itemId, string name, string userName, Guid eventId, DateTime eventDate) : base(userName, itemId, eventId, eventDate)
         {
             if (String.IsNullOrEmpty(name))
             {

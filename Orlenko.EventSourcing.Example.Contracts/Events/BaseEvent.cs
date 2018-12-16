@@ -4,16 +4,16 @@ namespace Orlenko.EventSourcing.Example.Contracts.Events
 {
     public class BaseEvent
     {
-        public BaseEvent(Guid id, DateTime eventDate)
+        public BaseEvent(Guid eventId, DateTime eventDate)
         {
-            EventDate = eventDate;
-            Id = id;
+            this.EventDate = eventDate;
+            this.EventId = eventId;
         }
 
         public int Version { get; set; }
 
         public readonly DateTime EventDate;
 
-        public readonly Guid Id;
+        public readonly Guid EventId;
     }
 }

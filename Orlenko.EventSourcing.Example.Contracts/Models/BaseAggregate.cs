@@ -1,6 +1,7 @@
 ﻿using Orlenko.EventSourcing.Example.Contracts.Events;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Orlenko.EventSourcing.Example.Contracts.Models
 {
@@ -55,6 +56,12 @@ namespace Orlenko.EventSourcing.Example.Contracts.Models
         {
             this.stagedVersion = this.lastEvent.Version;
             this.StagedEvents.Clear();
+        }
+
+        public virtual IEnumerable<TEvt> GetStagedEvents<TEvt>() where TEvt : BaseEvent
+        {
+            var result = this.StagedEvents.OfType<TEvt>().ToArray();
+            return result;
         }
     }
 }

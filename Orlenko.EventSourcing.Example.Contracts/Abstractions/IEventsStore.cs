@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace Orlenko.EventSourcing.Example.Contracts.Abstractions
 {
-    public interface IEventsStore
+    public interface IEventsStore<TEvt> where TEvt : BaseEvent
     {
-        Task<IEnumerable<BaseEvent>> GetAllAsync();
+        Task<IEnumerable<TEvt>> GetAllAsync();
 
-        Task<IEnumerable<BaseEvent>> GetAllForAggregateAsync(Guid aggregateId);
+        Task<IEnumerable<TEvt>> GetAllForAggregateAsync(Guid aggregateId);
 
-        Task AddEventAsync(BaseEvent evt);
+        Task AddEventAsync(TEvt evt);
     }
 }

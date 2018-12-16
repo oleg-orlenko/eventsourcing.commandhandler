@@ -22,6 +22,7 @@ namespace Orlenko.EventSourcing.Example.Core.Aggregates
         {
             // Lets have a constraint for item Name uniqueness
             ItemAggregate aggregate;
+            BaseItemEvent itemEvent;
             switch (evt)
             {
                 case ItemCreatedEvent created:
@@ -31,20 +32,22 @@ namespace Orlenko.EventSourcing.Example.Core.Aggregates
                         return new FailedAggregateApplicationResult("Item with the same name already exists.");
                     }
 
-                    aggregate = new ItemAggregate(created.Id);
+                    aggregate = new ItemAggregate(created.ItemId);
+                    itemEvent = created;
                     break;
 
                 case ItemDeletedEvent deleted:
-                    aggregate = await aggregatesRepository.GetByIdAsync(deleted.Id);
+                    aggregate = await aggregatesRepository.GetByIdAsync(deleted.ItemId);
                     if (aggregate == null)
                     {
                         return new FailedAggregateApplicationResult("Specified item was not found.");
                     }
-                    
+
+                    itemEvent = deleted;
                     break;
 
                 case ItemUpdatedEvent updated:
-                    aggregate = await aggregatesRepository.GetByIdAsync(updated.Id);
+                    aggregate = await aggregatesRepository.GetByIdAsync(updated.ItemId);
                     if (aggregate == null)
                     {
                         return new FailedAggregateApplicationResult("Specified item was not found.");
@@ -55,14 +58,15 @@ namespace Orlenko.EventSourcing.Example.Core.Aggregates
                     {
                         return new FailedAggregateApplicationResult("Item with the same name already exists.");
                     }
-                    
+
+                    itemEvent = updated;
                     break;
 
                 default:
                     return new FailedAggregateApplicationResult($"Specified event type {evt.GetType().Name} is not supported");
             }
 
-            var applicationResult = aggregate.ApplyEvent(evt);
+            var applicationResult = aggregate.ApplyEvent(itemEvent);
             switch (applicationResult)
             {
                 case SuccessAggregateApplicationResult success:

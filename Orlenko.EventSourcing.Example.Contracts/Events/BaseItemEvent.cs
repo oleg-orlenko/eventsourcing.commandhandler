@@ -6,9 +6,12 @@ namespace Orlenko.EventSourcing.Example.Contracts.Events
     {
         public readonly string UserName;
 
-        public BaseItemEvent(string userName, Guid id, DateTime eventDate) : base(id, eventDate)
+        public readonly Guid ItemId; 
+
+        public BaseItemEvent(string userName, Guid itemId, Guid eventId, DateTime eventDate) : base(eventId, eventDate)
         {
             this.UserName = userName;
+            this.ItemId = itemId;
         }
     }
 }

@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Orlenko.EventSourcing.Example.Contracts.Abstractions;
+using Orlenko.EventSourcing.Example.Contracts.Events;
+using Orlenko.EventSourcing.Example.Contracts.Models;
+using Orlenko.EventSourcing.Example.Core.CommandHandlers;
+using Orlenko.EventSourcing.Example.Core.EventPublishers;
+using Orlenko.EventSourcing.Example.Repository;
 
 namespace Orlenko.EventSourcing.Example
 {
@@ -15,6 +16,12 @@ namespace Orlenko.EventSourcing.Example
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvcCore();
+            services.AddCors();
+            services.AddSingleton<IEventsStore<BaseItemEvent>, InMemoryEventStore>();
+            services.AddSingleton<IAggregateRepository<ItemAggregate>, InMemoryAggregateRepository>();
+            services.AddTransient<ICommandHandler, DefaultCommandHandler>();
+            services.AddTransient<IEventsPublisher, MockEventPublisher>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -25,10 +32,8 @@ namespace Orlenko.EventSourcing.Example
                 app.UseDeveloperExceptionPage();
             }
 
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Hello World!");
-            });
+            app.UseMvc();
+            app.UseCors();
         }
     }
 }

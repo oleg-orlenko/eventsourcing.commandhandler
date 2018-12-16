@@ -21,6 +21,7 @@ namespace Orlenko.EventSourcing.Example.Core.CommandHandlers
         {
             this.root = root;
             this.publisher = publisher;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -44,13 +45,13 @@ namespace Orlenko.EventSourcing.Example.Core.CommandHandlers
                 switch (command)
                 {
                     case CreateItemCommand create:
-                        evt = new ItemCreatedEvent(command.Item.Id, command.Item.Name, command.UserName, DateTime.UtcNow);
+                        evt = new ItemCreatedEvent(command.Item.Id, command.Item.Name, command.UserName, Guid.NewGuid(), DateTime.UtcNow);
                         break;
                     case DeleteItemCommand delete:
-                        evt = new ItemDeletedEvent(delete.Item.Id, delete.UserName, DateTime.UtcNow);
+                        evt = new ItemDeletedEvent(delete.Item.Id, delete.UserName, Guid.NewGuid(), DateTime.UtcNow);
                         break;
                     case UpdateItemCommand update:
-                        evt = new ItemUpdatedEvent(update.Item.Id, update.Item.Name, update.UserName, DateTime.UtcNow);
+                        evt = new ItemUpdatedEvent(update.Item.Id, update.Item.Name, update.UserName, Guid.NewGuid(), DateTime.UtcNow);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(command));
@@ -60,10 +61,7 @@ namespace Orlenko.EventSourcing.Example.Core.CommandHandlers
                 switch(applicationResult)
                 {
                     case SuccessAggregateApplicationResult success:
-                        // Commit staged events might happen here
                         await this.root.CommitAsync();
-                        
-                        // Success result might have a list of Staged events in more complex implementation
                         await this.publisher.PublishAsync(evt);
                         break;
 
