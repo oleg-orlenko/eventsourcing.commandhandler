@@ -1,11 +1,14 @@
-﻿using Orlenko.EventSourcing.Example.Contracts.Models;
+﻿using System;
 
 namespace Orlenko.EventSourcing.Example.Contracts.Commands
 {
     public class DeleteItemCommand : BaseItemCommand
     {
-        public DeleteItemCommand(ItemModel item, string userName) : base(item, userName)
+        public readonly Guid ItemId;
+
+        public DeleteItemCommand(Guid itemId, string userName) : base(userName)
         {
+            ItemId = itemId;
         }
     }
 }

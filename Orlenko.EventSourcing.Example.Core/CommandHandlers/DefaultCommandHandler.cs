@@ -32,7 +32,7 @@ namespace Orlenko.EventSourcing.Example.Core.CommandHandlers
         /// <exception cref="ArgumentNullException">If command is null</exception>
         /// <exception cref="ArgumentOutOfRangeException">If command has unsupported type</exception>
         /// <exception cref="Exception">In case of more generic exception</exception>
-        public async Task HandleAsync(BaseItemCommand command)
+        public async Task<BaseItemEvent> HandleAsync(BaseItemCommand command)
         {
             try
             {
@@ -45,10 +45,10 @@ namespace Orlenko.EventSourcing.Example.Core.CommandHandlers
                 switch (command)
                 {
                     case CreateItemCommand create:
-                        evt = new ItemCreatedEvent(command.Item.Id, command.Item.Name, command.UserName, Guid.NewGuid(), DateTime.UtcNow);
+                        evt = new ItemCreatedEvent(create.Item.Id, create.Item.Name, command.UserName, Guid.NewGuid(), DateTime.UtcNow);
                         break;
                     case DeleteItemCommand delete:
-                        evt = new ItemDeletedEvent(delete.Item.Id, delete.UserName, Guid.NewGuid(), DateTime.UtcNow);
+                        evt = new ItemDeletedEvent(delete.ItemId, delete.UserName, Guid.NewGuid(), DateTime.UtcNow);
                         break;
                     case UpdateItemCommand update:
                         evt = new ItemUpdatedEvent(update.Item.Id, update.Item.Name, update.UserName, Guid.NewGuid(), DateTime.UtcNow);
@@ -63,7 +63,7 @@ namespace Orlenko.EventSourcing.Example.Core.CommandHandlers
                     case SuccessAggregateApplicationResult success:
                         await this.root.CommitAsync();
                         await this.publisher.PublishAsync(evt);
-                        break;
+                        return evt;
 
                     case FailedAggregateApplicationResult failed:
                         throw new Exception(failed.Error);

@@ -32,7 +32,7 @@ namespace Orlenko.EventSourcing.Example.Contracts.Models
             // I have concerns here, but how the handler would now the version before event appliation ?
             if (evt.Version == 0) // For now this is the definition of a new event
             {
-                evt.Version = this.stagedVersion++;
+                evt.Version = ++this.stagedVersion;
                 this.StagedEvents.Enqueue(evt);    
             }
             
