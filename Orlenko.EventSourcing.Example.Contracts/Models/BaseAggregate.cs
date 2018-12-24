@@ -7,17 +7,17 @@ namespace Orlenko.EventSourcing.Example.Contracts.Models
 {
     public abstract class BaseAggregate
     {
+        public BaseEvent LastEvent { get; private set; }
+
         public readonly Guid Id;
 
         protected readonly Queue<BaseEvent> StagedEvents;
-
-        private BaseEvent lastEvent;
 
         public BaseAggregate(Guid id)
         {
             this.Id = id;
             this.StagedEvents = new Queue<BaseEvent>();
-            this.lastEvent = null;
+            this.LastEvent = null;
         }
 
         private int stagedVersion;
@@ -33,7 +33,8 @@ namespace Orlenko.EventSourcing.Example.Contracts.Models
             if (evt.Version == 0) // For now this is the definition of a new event
             {
                 evt.Version = ++this.stagedVersion;
-                this.StagedEvents.Enqueue(evt);    
+                this.StagedEvents.Enqueue(evt);
+                this.LastEvent = evt;
             }
             
             // This trick might help, but commit of aggregate's staged events is happenning inside AggregateRoot and not in CommandHandler
@@ -44,18 +45,12 @@ namespace Orlenko.EventSourcing.Example.Contracts.Models
 
         public virtual void Commit()
         {
-            var evt = this.StagedEvents.Dequeue();
-            while(evt != null)
-            {
-                this.lastEvent = evt;
-                evt = this.StagedEvents.Dequeue();
-            }
+            this.StagedEvents.Clear();
         }
 
         public virtual void Rollback()
         {
-            this.stagedVersion = this.lastEvent.Version;
-            this.StagedEvents.Clear();
+            // TODO: define what to do here
         }
 
         public virtual IEnumerable<TEvt> GetStagedEvents<TEvt>() where TEvt : BaseEvent

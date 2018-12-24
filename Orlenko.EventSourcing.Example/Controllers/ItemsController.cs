@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Orlenko.EventSourcing.Example.Contracts.Abstractions;
 using Orlenko.EventSourcing.Example.Contracts.Commands;
+using Orlenko.EventSourcing.Example.Contracts.Exceptions;
 using Orlenko.EventSourcing.Example.Contracts.Models;
 using Orlenko.EventSourcing.Example.ViewModels;
 using System;
@@ -29,20 +30,27 @@ namespace Orlenko.EventSourcing.Example.Controllers
                 return BadRequest();
             }
 
-            var itemModel = new ItemModel(Guid.NewGuid(), item.Name);
-            var command = new CreateItemCommand(itemModel, User.Identity.Name);
-            var evt = await commandHandler.HandleAsync(command);
-            var getViewModel = new ItemViewModel
+            try
             {
-                ItemId = itemModel.Id,
-                Name = itemModel.Name,
-                Created = evt.EventDate,
-                Updated = evt.EventDate,
-                CreatedBy = evt.UserName,
-                UpdatedBy = evt.UserName
-            };
-            // Can't return Created with Location, because this service does not now where this item can be accessed :( 
-            return Ok(getViewModel);
+                var itemModel = new ItemModel(Guid.NewGuid(), item.Name);
+                var command = new CreateItemCommand(itemModel, User.Identity.Name);
+                var evt = await commandHandler.HandleAsync(command);
+                var getViewModel = new ItemViewModel
+                {
+                    ItemId = itemModel.Id,
+                    Name = itemModel.Name,
+                    Created = evt.EventDate,
+                    Updated = evt.EventDate,
+                    CreatedBy = evt.UserName,
+                    UpdatedBy = evt.UserName
+                };
+                // Can't return Created with Location, because this service does not now where this item can be accessed :( 
+                return Ok(getViewModel);
+            }
+            catch (ItemAlreadyExistsException e)
+            {
+                return this.BadRequest(e.Message);
+            }
         }
 
         [HttpPut("{itemId}")]
@@ -53,18 +61,36 @@ namespace Orlenko.EventSourcing.Example.Controllers
                 return BadRequest();
             }
 
-            var itemModel = new ItemModel(itemId, item.Name);
-            var command = new UpdateItemCommand(itemModel, User.Identity.Name);
-            await commandHandler.HandleAsync(command);
-            return NoContent();
+            try
+            {
+                var itemModel = new ItemModel(itemId, item.Name);
+                var command = new UpdateItemCommand(itemModel, User.Identity.Name);
+                await commandHandler.HandleAsync(command);
+                return NoContent();
+            }
+            catch (ItemNotFoundException)
+            {
+                return this.NotFound();
+            }
+            catch (ItemAlreadyExistsException e)
+            {
+                return this.BadRequest(e.Message);
+            }
         }
 
         [HttpDelete("{itemId}")]
         public async Task<IActionResult> DeleteItemAsync(Guid itemId)
         {
-            var command = new DeleteItemCommand(itemId, User.Identity.Name);
-            await commandHandler.HandleAsync(command);
-            return NoContent();
+            try
+            {
+                var command = new DeleteItemCommand(itemId, User.Identity.Name);
+                await commandHandler.HandleAsync(command);
+                return NoContent();
+            }
+            catch (ItemNotFoundException)
+            {
+                return this.NotFound();
+            }
         }
     }
 }

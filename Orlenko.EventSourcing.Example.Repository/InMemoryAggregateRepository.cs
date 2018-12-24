@@ -27,7 +27,19 @@ namespace Orlenko.EventSourcing.Example.Repository
             var stagedEvents = aggregate.GetStagedEvents<BaseItemEvent>();
             foreach(var evt in stagedEvents)
             {
-                await this.eventsStore.AddEventAsync(evt);    
+                await this.eventsStore.AddEventAsync(evt);
+            }
+
+            switch (aggregate.LastEvent)
+            {
+                case ItemCreatedEvent created:
+                case ItemUpdatedEvent updated:
+                    this.aggregatesCollection[aggregate.Id] = aggregate;
+                    break;
+
+                case ItemDeletedEvent deleted:
+                    this.aggregatesCollection.TryRemove(aggregate.Id, out ItemAggregate agg);
+                    break;
             }
         }
 
@@ -57,7 +69,7 @@ namespace Orlenko.EventSourcing.Example.Repository
         public Task RollbackChangesAsync(ItemAggregate aggregate)
         {
             // No idea how to implement this for now
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
     }
 }

@@ -6,6 +6,7 @@ using Orlenko.EventSourcing.Example.Contracts.Events;
 using Orlenko.EventSourcing.Example.Core.Aggregates;
 using Microsoft.Extensions.Logging;
 using Orlenko.EventSourcing.Example.Contracts.Models;
+using Orlenko.EventSourcing.Example.Contracts.Exceptions;
 
 namespace Orlenko.EventSourcing.Example.Core.CommandHandlers
 {
@@ -64,6 +65,12 @@ namespace Orlenko.EventSourcing.Example.Core.CommandHandlers
                         await this.root.CommitAsync();
                         await this.publisher.PublishAsync(evt);
                         return evt;
+
+                    case ItemNotFoundApplicationResult notFound:
+                        throw new ItemNotFoundException();
+
+                    case ItemAlreadyExistsApplicationResult itemExists:
+                        throw new ItemAlreadyExistsException(itemExists.Message);
 
                     case FailedAggregateApplicationResult failed:
                         throw new Exception(failed.Error);

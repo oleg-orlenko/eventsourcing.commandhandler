@@ -29,7 +29,7 @@ namespace Orlenko.EventSourcing.Example.Core.Aggregates
                     var itemExists = await aggregatesRepository.ExistsAsync(created.Name);
                     if (itemExists)
                     {
-                        return new FailedAggregateApplicationResult("Item with the same name already exists.");
+                        return new ItemAlreadyExistsApplicationResult("Item with the same name already exists");
                     }
 
                     aggregate = new ItemAggregate(created.ItemId);
@@ -40,7 +40,7 @@ namespace Orlenko.EventSourcing.Example.Core.Aggregates
                     aggregate = await aggregatesRepository.GetByIdAsync(deleted.ItemId);
                     if (aggregate == null)
                     {
-                        return new FailedAggregateApplicationResult("Specified item was not found.");
+                        return new ItemNotFoundApplicationResult();
                     }
 
                     itemEvent = deleted;
@@ -50,13 +50,13 @@ namespace Orlenko.EventSourcing.Example.Core.Aggregates
                     aggregate = await aggregatesRepository.GetByIdAsync(updated.ItemId);
                     if (aggregate == null)
                     {
-                        return new FailedAggregateApplicationResult("Specified item was not found.");
+                        return new ItemNotFoundApplicationResult();
                     }
 
                     var itemWithSameNameExists = await aggregatesRepository.ExistsAsync(updated.Name);
                     if (itemWithSameNameExists)
                     {
-                        return new FailedAggregateApplicationResult("Item with the same name already exists.");
+                        return new ItemAlreadyExistsApplicationResult("Item with the same name already exists");
                     }
 
                     itemEvent = updated;
@@ -82,7 +82,10 @@ namespace Orlenko.EventSourcing.Example.Core.Aggregates
         {
             foreach(var aggregate in this.stagedAggregates)
             {
-                await aggregatesRepository.CommitChangesAsync(aggregate);    
+                // Persists aggregate state into repository
+                await aggregatesRepository.CommitChangesAsync(aggregate);
+
+                // Sets applies all staged events to aggregate state
                 aggregate.Commit();
             }
 
