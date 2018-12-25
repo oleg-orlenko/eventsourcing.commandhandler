@@ -1,4 +1,5 @@
-﻿using Orlenko.EventSourcing.Example.Contracts.Events;
+﻿using Orlenko.EventSourcing.Example.Contracts.Enums;
+using Orlenko.EventSourcing.Example.Contracts.Events;
 using System;
 
 namespace Orlenko.EventSourcing.Example.Contracts.Models
@@ -7,8 +8,11 @@ namespace Orlenko.EventSourcing.Example.Contracts.Models
     {
         public string Name { get; private set; }
 
+        public AggregateStates TransactionalState { get; private set; }
+
         public ItemAggregate(Guid id) : base(id)
         {
+            this.TransactionalState = AggregateStates.NotChanged;
         }
 
         public override AggregateApplicationResult ApplyEvent(BaseEvent evt)
@@ -22,10 +26,16 @@ namespace Orlenko.EventSourcing.Example.Contracts.Models
             {
                 case ItemCreatedEvent created:
                     Name = created.Name;
+                    this.TransactionalState = AggregateStates.Created;
                     break;
 
                 case ItemUpdatedEvent updated:
                     Name = updated.Name;
+                    this.TransactionalState = AggregateStates.Updated;
+                    break;
+
+                case ItemDeletedEvent deleted:
+                    this.TransactionalState = AggregateStates.Deleted;
                     break;
             }
 
@@ -34,8 +44,14 @@ namespace Orlenko.EventSourcing.Example.Contracts.Models
 
         public override void Rollback()
         {
-            // Have no idea at the moment what to do here ((
             base.Rollback();
+            this.TransactionalState = AggregateStates.NotChanged;
+        }
+
+        public override void Commit()
+        {
+            base.Commit();
+            this.TransactionalState = AggregateStates.NotChanged;
         }
     }
 }

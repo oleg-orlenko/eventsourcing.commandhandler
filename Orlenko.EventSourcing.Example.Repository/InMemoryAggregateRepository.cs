@@ -1,4 +1,5 @@
 ﻿using Orlenko.EventSourcing.Example.Contracts.Abstractions;
+using Orlenko.EventSourcing.Example.Contracts.Enums;
 using Orlenko.EventSourcing.Example.Contracts.Events;
 using Orlenko.EventSourcing.Example.Contracts.Models;
 using System;
@@ -30,14 +31,14 @@ namespace Orlenko.EventSourcing.Example.Repository
                 await this.eventsStore.AddEventAsync(evt);
             }
 
-            switch (aggregate.LastEvent)
+            switch (aggregate.TransactionalState)
             {
-                case ItemCreatedEvent created:
-                case ItemUpdatedEvent updated:
+                case AggregateStates.Created:
+                case AggregateStates.Updated:
                     this.aggregatesCollection[aggregate.Id] = aggregate;
                     break;
 
-                case ItemDeletedEvent deleted:
+                case AggregateStates.Deleted:
                     this.aggregatesCollection.TryRemove(aggregate.Id, out ItemAggregate agg);
                     break;
             }

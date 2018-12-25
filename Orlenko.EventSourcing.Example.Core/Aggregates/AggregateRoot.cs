@@ -82,7 +82,7 @@ namespace Orlenko.EventSourcing.Example.Core.Aggregates
         {
             foreach(var aggregate in this.stagedAggregates)
             {
-                // Persists aggregate state into repository
+                // Persists aggregate state
                 await aggregatesRepository.CommitChangesAsync(aggregate);
 
                 // Sets applies all staged events to aggregate state
