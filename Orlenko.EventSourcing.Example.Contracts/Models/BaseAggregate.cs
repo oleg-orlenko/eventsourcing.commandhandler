@@ -35,6 +35,10 @@ namespace Orlenko.EventSourcing.Example.Contracts.Models
                 evt.Version = ++this.stagedVersion;
                 this.StagedEvents.Enqueue(evt);
             }
+            else // Events comes from store, because it has version
+            {
+                this.LastEvent = evt;
+            }
             
             // This trick might help, but commit of aggregate's staged events is happenning inside AggregateRoot and not in CommandHandler
             // I dont like the idea of getting aggregate version from AggregateRoot

@@ -1,7 +1,9 @@
 ﻿using Orlenko.EventSourcing.Example.Contracts.Abstractions;
 using Orlenko.EventSourcing.Example.Contracts.Events;
 using Orlenko.EventSourcing.Example.Contracts.Models;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Orlenko.EventSourcing.Example.Core.Aggregates
@@ -26,8 +28,8 @@ namespace Orlenko.EventSourcing.Example.Core.Aggregates
             switch (evt)
             {
                 case ItemCreatedEvent created:
-                    var itemExists = await aggregatesRepository.ExistsAsync(created.Name);
-                    if (itemExists)
+                    var itemsWithSameName = await aggregatesRepository.GetByNameAsync(created.Name);
+                    if (itemsWithSameName.Any(x => x.LastEvent != null && !(x.LastEvent is ItemDeletedEvent)))
                     {
                         return new ItemAlreadyExistsApplicationResult("Item with the same name already exists");
                     }
@@ -38,9 +40,15 @@ namespace Orlenko.EventSourcing.Example.Core.Aggregates
 
                 case ItemDeletedEvent deleted:
                     aggregate = await aggregatesRepository.GetByIdAsync(deleted.ItemId);
-                    if (aggregate == null)
+                    if (aggregate == null || aggregate.LastEvent == null)
                     {
                         return new ItemNotFoundApplicationResult();
+                    }
+
+                    if (aggregate.LastEvent is ItemDeletedEvent)
+                    {
+                        // It is already deleted
+                        return new SuccessAggregateApplicationResult();
                     }
 
                     itemEvent = deleted;
@@ -48,13 +56,20 @@ namespace Orlenko.EventSourcing.Example.Core.Aggregates
 
                 case ItemUpdatedEvent updated:
                     aggregate = await aggregatesRepository.GetByIdAsync(updated.ItemId);
-                    if (aggregate == null)
+                    if (aggregate == null || aggregate.LastEvent == null || aggregate.LastEvent is ItemDeletedEvent)
                     {
                         return new ItemNotFoundApplicationResult();
                     }
 
-                    var itemWithSameNameExists = await aggregatesRepository.ExistsAsync(updated.Name);
-                    if (itemWithSameNameExists)
+                    if (aggregate.LastEvent is ItemUpdatedEvent lastUpdated && lastUpdated.Name.Equals(updated.Name))
+                    {
+                        // This aggregate has already got this name
+                        return new SuccessAggregateApplicationResult();
+                    }
+
+                    // Looking for another aggregate with this name
+                    var itemsWithSameNameForUpdate = await aggregatesRepository.GetByNameAsync(updated.Name);
+                    if (itemsWithSameNameForUpdate.Any(x => x.LastEvent != null && !(x.LastEvent is ItemDeletedEvent)))
                     {
                         return new ItemAlreadyExistsApplicationResult("Item with the same name already exists");
                     }

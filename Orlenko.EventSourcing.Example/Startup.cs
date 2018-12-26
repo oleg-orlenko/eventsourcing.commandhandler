@@ -29,8 +29,11 @@ namespace Orlenko.EventSourcing.Example
             services.AddSingleton<IAuthorizationHandler, CustomAuthorizationHandler>();
 
             services.AddCors();
-            services.AddSingleton<IEventsStore<BaseItemEvent>, InMemoryEventStore>();
-            services.AddSingleton<IAggregateRepository<ItemAggregate>, InMemoryAggregateRepository>();
+            //services.AddSingleton<IEventsStore<BaseItemEvent>, InMemoryEventStore>();
+            services.AddSingleton<IEventsStore<BaseItemEvent>, InFileEventStore>();
+            
+            //services.AddSingleton<IAggregateRepository<ItemAggregate>, InMemoryAggregateRepository>();
+            services.AddSingleton<IAggregateRepository<ItemAggregate>, InlineRestoreAggregateRepository>();
             services.AddTransient<ICommandHandler, DefaultCommandHandler>();
             services.AddTransient<IEventsPublisher, MockEventPublisher>();
             services.AddSingleton<AggregateRoot>();

@@ -1,5 +1,6 @@
 ﻿using Orlenko.EventSourcing.Example.Contracts.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Orlenko.EventSourcing.Example.Contracts.Abstractions
@@ -8,7 +9,7 @@ namespace Orlenko.EventSourcing.Example.Contracts.Abstractions
     {
         Task<TAgg> GetByIdAsync(Guid id);
 
-        Task<bool> ExistsAsync(string name);
+        Task<IEnumerable<TAgg>> GetByNameAsync(string name);
 
         Task CommitChangesAsync(TAgg aggregate);
 

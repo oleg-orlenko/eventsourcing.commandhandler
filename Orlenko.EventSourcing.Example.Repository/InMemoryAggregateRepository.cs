@@ -4,6 +4,7 @@ using Orlenko.EventSourcing.Example.Contracts.Events;
 using Orlenko.EventSourcing.Example.Contracts.Models;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -44,15 +45,15 @@ namespace Orlenko.EventSourcing.Example.Repository
             }
         }
 
-        public Task<bool> ExistsAsync(string name)
+        public Task<IEnumerable<ItemAggregate>> GetByNameAsync(string name)
         {
-            var result = false;
             if (!String.IsNullOrEmpty(name))
             {
-                result = this.aggregatesCollection.Any(a => a.Value.Name.Equals(name));    
+                var result = this.aggregatesCollection.Where(a => a.Value.Name.Equals(name)).Select(x => x.Value).ToArray();
+                return Task.FromResult<IEnumerable<ItemAggregate>>(result);
             }
 
-            return Task.FromResult(result);
+            return Task.FromResult<IEnumerable<ItemAggregate>>(new ItemAggregate[0]);
         }
 
         public Task<ItemAggregate> GetByIdAsync(Guid id)
