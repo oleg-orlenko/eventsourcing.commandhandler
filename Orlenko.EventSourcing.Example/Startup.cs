@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Orlenko.EventSourcing.Example.Authentication;
 using Orlenko.EventSourcing.Example.Authorization;
@@ -12,11 +13,19 @@ using Orlenko.EventSourcing.Example.Core.CommandHandlers;
 using Orlenko.EventSourcing.Example.Core.EventPublishers;
 using Orlenko.EventSourcing.Example.Repository;
 using Orlenko.EventSourcing.Example.Repository.MongoDb;
+using Orlenko.EventSourcing.Example.Repository.MongoDb.Configuration;
 
 namespace Orlenko.EventSourcing.Example
 {
     public class Startup
     {
+        private readonly IConfiguration config;
+
+        public Startup(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -32,6 +41,8 @@ namespace Orlenko.EventSourcing.Example
             services.AddCors();
             //services.AddSingleton<IEventsStore<BaseItemEvent>, InMemoryEventStore>();
             //services.AddTransient<IEventsStore<BaseItemEvent>, InFileEventStore>();
+            var mongoConfig = new MongoEventsConfig(this.config.GetSection("mongoDB"));
+            services.AddSingleton(mongoConfig);
             services.AddTransient<IEventsStore<BaseItemEvent>, MongoEventsStore>();
 
             //services.AddSingleton<IAggregateRepository<ItemAggregate>, InMemoryAggregateRepository>();

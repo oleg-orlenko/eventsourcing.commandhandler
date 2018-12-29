@@ -15,4 +15,10 @@
     <ProjectReference Include="..\Orlenko.EventSourcing.Example.Repository\Orlenko.EventSourcing.Example.Repository.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

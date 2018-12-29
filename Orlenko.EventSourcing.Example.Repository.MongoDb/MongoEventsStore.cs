@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
 using Orlenko.EventSourcing.Example.Contracts.Abstractions;
 using Orlenko.EventSourcing.Example.Contracts.Events;
+using Orlenko.EventSourcing.Example.Repository.MongoDb.Configuration;
 using Orlenko.EventSourcing.Example.Repository.MongoDb.Entities;
 using System;
 using System.Collections.Generic;
@@ -17,11 +18,11 @@ namespace Orlenko.EventSourcing.Example.Repository.MongoDb
 
         private readonly IMongoCollection<EventStoreEntity> collection;
 
-        public MongoEventsStore()
+        public MongoEventsStore(MongoEventsConfig config)
         {
-            this.client = new MongoClient("mongodb://127.0.0.1");
-            this.database = this.client.GetDatabase("ItemsDatabase");
-            this.collection = this.database.GetCollection<EventStoreEntity>("Events");
+            client = new MongoClient(config.ServerConnection);
+            database = client.GetDatabase(config.DatabaseName);
+            collection = database.GetCollection<EventStoreEntity>(config.EventsCollection);
         }
 
         public async Task AddEventAsync(BaseItemEvent evt)
@@ -50,24 +51,24 @@ namespace Orlenko.EventSourcing.Example.Repository.MongoDb
             entity.UserName = evt.UserName;
             entity.Version = evt.Version;
 
-            await this.collection.InsertOneAsync(entity);
+            await collection.InsertOneAsync(entity);
         }
 
         public async Task<IEnumerable<BaseItemEvent>> GetAllAsync()
         {
             var filter = Builders<EventStoreEntity>.Filter.Empty;
-            var cursor = await this.collection.FindAsync(filter);
+            var cursor = await collection.FindAsync(filter);
             var dbEntities = await cursor.ToListAsync();
-            var result = this.ConvertEntitiesList(dbEntities);
+            var result = ConvertEntitiesList(dbEntities);
             return result;
         }
 
         public async Task<IEnumerable<BaseItemEvent>> GetAllForAggregateAsync(Guid aggregateId)
         {
             var filter = Builders<EventStoreEntity>.Filter.Eq(x => x.ItemId, aggregateId);
-            var cursor = await this.collection.FindAsync(filter);
+            var cursor = await collection.FindAsync(filter);
             var dbEntities = await cursor.ToListAsync();
-            var result = this.ConvertEntitiesList(dbEntities);
+            var result = ConvertEntitiesList(dbEntities);
             return result;
         }
 
