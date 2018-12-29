@@ -13,9 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orlenko.EventSourcing.Examp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{89C1B616-7ECB-4A38-A4FB-5B810E0BDAB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts.Tests", "Tests\Contracts.Tests\Contracts.Tests.csproj", "{170B1410-E096-4410-A4C9-62FCD1F1FAC4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts.Tests", "Tests\Contracts.Tests\Contracts.Tests.csproj", "{170B1410-E096-4410-A4C9-62FCD1F1FAC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Tests", "Tests\Core.Tests\Core.Tests.csproj", "{CA1F7008-706F-4427-AAF5-F3B5B5BAB158}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Tests", "Tests\Core.Tests\Core.Tests.csproj", "{CA1F7008-706F-4427-AAF5-F3B5B5BAB158}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orlenko.EventSourcing.Example.Repository.MongoDb", "Orlenko.EventSourcing.Example.Repository.MongoDb\Orlenko.EventSourcing.Example.Repository.MongoDb.csproj", "{59C8D8F8-1789-4E0A-B874-48E8937A57E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{CA1F7008-706F-4427-AAF5-F3B5B5BAB158}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA1F7008-706F-4427-AAF5-F3B5B5BAB158}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA1F7008-706F-4427-AAF5-F3B5B5BAB158}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59C8D8F8-1789-4E0A-B874-48E8937A57E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59C8D8F8-1789-4E0A-B874-48E8937A57E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59C8D8F8-1789-4E0A-B874-48E8937A57E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59C8D8F8-1789-4E0A-B874-48E8937A57E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

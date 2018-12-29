@@ -2,12 +2,13 @@
 
 namespace Orlenko.EventSourcing.Example.Contracts.Events
 {
-    public class BaseEvent
+    public abstract class BaseEvent
     {
-        public BaseEvent(Guid eventId, DateTime eventDate)
+        protected BaseEvent(Guid eventId, DateTime eventDate, int version)
         {
             this.EventDate = eventDate;
             this.EventId = eventId;
+            this.Version = version;
         }
 
         public int Version { get; set; }

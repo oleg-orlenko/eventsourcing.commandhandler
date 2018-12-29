@@ -10,9 +10,20 @@ namespace Orlenko.EventSourcing.Example.Contracts.Models
 
         public AggregateStates TransactionalState { get; private set; }
 
-        public ItemAggregate(Guid id) : base(id)
+        public ItemAggregate(Guid id, BaseEvent lastEvent = null) : base(id, lastEvent)
         {
             this.TransactionalState = AggregateStates.NotChanged;
+        }
+
+        // For restore from a snapshot
+        public ItemAggregate(Guid id, string name, BaseEvent lastEvent) : this(id, lastEvent)
+        {
+            if (String.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            this.Name = name;
         }
 
         public override AggregateApplicationResult ApplyEvent(BaseEvent evt)
