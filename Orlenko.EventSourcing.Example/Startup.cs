@@ -30,10 +30,10 @@ namespace Orlenko.EventSourcing.Example
 
             services.AddCors();
             //services.AddSingleton<IEventsStore<BaseItemEvent>, InMemoryEventStore>();
-            services.AddSingleton<IEventsStore<BaseItemEvent>, InFileEventStore>();
+            services.AddTransient<IEventsStore<BaseItemEvent>, InFileEventStore>();
             
             //services.AddSingleton<IAggregateRepository<ItemAggregate>, InMemoryAggregateRepository>();
-            services.AddSingleton<IAggregateRepository<ItemAggregate>, InlineRestoreAggregateRepository>();
+            services.AddTransient<IAggregateRepository<ItemAggregate>, InlineRestoreAggregateRepository>();
             services.AddTransient<ICommandHandler, DefaultCommandHandler>();
             services.AddTransient<IEventsPublisher, MockEventPublisher>();
             services.AddSingleton<AggregateRoot>();
