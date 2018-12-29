@@ -11,6 +11,7 @@ using Orlenko.EventSourcing.Example.Core.Aggregates;
 using Orlenko.EventSourcing.Example.Core.CommandHandlers;
 using Orlenko.EventSourcing.Example.Core.EventPublishers;
 using Orlenko.EventSourcing.Example.Repository;
+using Orlenko.EventSourcing.Example.Repository.MongoDb;
 
 namespace Orlenko.EventSourcing.Example
 {
@@ -30,8 +31,9 @@ namespace Orlenko.EventSourcing.Example
 
             services.AddCors();
             //services.AddSingleton<IEventsStore<BaseItemEvent>, InMemoryEventStore>();
-            services.AddTransient<IEventsStore<BaseItemEvent>, InFileEventStore>();
-            
+            //services.AddTransient<IEventsStore<BaseItemEvent>, InFileEventStore>();
+            services.AddTransient<IEventsStore<BaseItemEvent>, MongoEventsStore>();
+
             //services.AddSingleton<IAggregateRepository<ItemAggregate>, InMemoryAggregateRepository>();
             services.AddTransient<IAggregateRepository<ItemAggregate>, InlineRestoreAggregateRepository>();
             services.AddTransient<ICommandHandler, DefaultCommandHandler>();

@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Orlenko.EventSourcing.Example.Contracts\Orlenko.EventSourcing.Example.Contracts.csproj" />
     <ProjectReference Include="..\Orlenko.EventSourcing.Example.Core\Orlenko.EventSourcing.Example.Core.csproj" />
+    <ProjectReference Include="..\Orlenko.EventSourcing.Example.Repository.MongoDb\Orlenko.EventSourcing.Example.Repository.MongoDb.csproj" />
     <ProjectReference Include="..\Orlenko.EventSourcing.Example.Repository\Orlenko.EventSourcing.Example.Repository.csproj" />
   </ItemGroup>
 

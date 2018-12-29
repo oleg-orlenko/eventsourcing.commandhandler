@@ -13,11 +13,12 @@ namespace Orlenko.EventSourcing.Example.Contracts.Models
 
         protected readonly Queue<BaseEvent> StagedEvents;
 
-        public BaseAggregate(Guid id)
+        public BaseAggregate(Guid id, BaseEvent lastEvent = null)
         {
             this.Id = id;
             this.StagedEvents = new Queue<BaseEvent>();
-            this.LastEvent = null;
+            this.LastEvent = lastEvent;
+            this.stagedVersion = lastEvent?.Version ?? 0;
         }
 
         private int stagedVersion;
