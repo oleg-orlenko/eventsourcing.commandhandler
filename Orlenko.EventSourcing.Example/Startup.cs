@@ -41,12 +41,18 @@ namespace Orlenko.EventSourcing.Example
             services.AddCors();
             //services.AddSingleton<IEventsStore<BaseItemEvent>, InMemoryEventStore>();
             //services.AddTransient<IEventsStore<BaseItemEvent>, InFileEventStore>();
-            var mongoConfig = new MongoEventsConfig(this.config.GetSection("mongoDB"));
-            services.AddSingleton(mongoConfig);
+            var mongoConfigSection = this.config.GetSection("mongoDB");
+            var mongoEventsConfig = new MongoEventsConfig(mongoConfigSection);
+            var mongoSnapshotsConfig = new MongoSnapshotsConfig(mongoConfigSection);
+            services.AddSingleton(mongoEventsConfig);
+            services.AddSingleton(mongoSnapshotsConfig);
             services.AddTransient<IEventsStore<BaseItemEvent>, MongoEventsStore>();
 
             //services.AddSingleton<IAggregateRepository<ItemAggregate>, InMemoryAggregateRepository>();
-            services.AddTransient<IAggregateRepository<ItemAggregate>, InlineRestoreAggregateRepository>();
+            //services.AddTransient<IAggregateRepository<ItemAggregate>, InlineRestoreAggregateRepository>();
+            services.AddTransient<IAggregateRepository<ItemAggregate>, PerformantInlineRestoreAggregateRepository>();
+            services.AddTransient<ISnapshotsRepository<ItemAggregate>, MongoSnapshotsRepository>();
+
             services.AddTransient<ICommandHandler, DefaultCommandHandler>();
             services.AddTransient<IEventsPublisher, MockEventPublisher>();
             services.AddSingleton<AggregateRoot>();

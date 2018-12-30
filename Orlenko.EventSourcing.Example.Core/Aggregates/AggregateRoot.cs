@@ -1,7 +1,7 @@
 ﻿using Orlenko.EventSourcing.Example.Contracts.Abstractions;
+using Orlenko.EventSourcing.Example.Contracts.Enums;
 using Orlenko.EventSourcing.Example.Contracts.Events;
 using Orlenko.EventSourcing.Example.Contracts.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -85,7 +85,6 @@ namespace Orlenko.EventSourcing.Example.Core.Aggregates
             switch (applicationResult)
             {
                 case SuccessAggregateApplicationResult success:
-                    // This method might be a root specific, because of several aggregate repositories might be impacted by one event
                     this.stagedAggregates.Add(aggregate);
                     break;
             }
@@ -100,8 +99,10 @@ namespace Orlenko.EventSourcing.Example.Core.Aggregates
                 // Persists aggregate state
                 await aggregatesRepository.CommitChangesAsync(aggregate);
 
-                // Sets applies all staged events to aggregate state
-                aggregate.Commit();
+                if (aggregate.TransactionalState != AggregateStates.NotChanged) //It was not committed
+                {
+                    aggregate.Commit();
+                }
             }
 
             // On purpose I am not clearing staged aggregates collection untill all of them are commited 
@@ -109,16 +110,17 @@ namespace Orlenko.EventSourcing.Example.Core.Aggregates
             this.stagedAggregates.Clear();
         }
 
-        public async Task RollbackAsync()
+        public Task RollbackAsync()
         {
             // How to handle exception here ?(
             foreach(var aggregate in this.stagedAggregates)
             {
-                await aggregatesRepository.RollbackChangesAsync(aggregate);    
                 aggregate.Rollback();
             }
 
             this.stagedAggregates.Clear();
+
+            return Task.CompletedTask;
         }
     }
 }

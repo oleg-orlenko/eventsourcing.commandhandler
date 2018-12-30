@@ -27,30 +27,7 @@ namespace Orlenko.EventSourcing.Example.Repository.MongoDb
 
         public async Task AddEventAsync(BaseItemEvent evt)
         {
-            var entity = new EventStoreEntity();
-            switch (evt)
-            {
-                case ItemCreatedEvent created:
-                    entity.Type = nameof(ItemCreatedEvent);
-                    entity.ItemName = created.Name;
-                    break;
-                case ItemDeletedEvent deleted:
-                    entity.Type = nameof(ItemDeletedEvent);
-                    break;
-                case ItemUpdatedEvent updated:
-                    entity.Type = nameof(ItemUpdatedEvent);
-                    entity.ItemName = updated.Name;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException($"Specified type {evt.GetType()} is not supported");
-            }
-
-            entity.EventId = evt.EventId;
-            entity.EventDate = evt.EventDate;
-            entity.ItemId = evt.ItemId;
-            entity.UserName = evt.UserName;
-            entity.Version = evt.Version;
-
+            var entity = evt.ToEventStoreEntity();
             await collection.InsertOneAsync(entity);
         }
 
@@ -74,24 +51,7 @@ namespace Orlenko.EventSourcing.Example.Repository.MongoDb
 
         private BaseItemEvent[] ConvertEntitiesList(IEnumerable<EventStoreEntity> dbEntities)
         {
-            var result = dbEntities.Select(e =>
-            {
-                switch (e.Type)
-                {
-                    case nameof(ItemCreatedEvent):
-                        return new ItemCreatedEvent(e.ItemId, e.ItemName, e.UserName, e.EventId, e.EventDate, e.Version) as BaseItemEvent;
-
-                    case nameof(ItemDeletedEvent):
-                        return new ItemDeletedEvent(e.ItemId, e.UserName, e.EventId, e.EventDate, e.Version) as BaseItemEvent;
-
-                    case nameof(ItemUpdatedEvent):
-                        return new ItemUpdatedEvent(e.ItemId, e.ItemName, e.UserName, e.EventId, e.EventDate, e.Version) as BaseItemEvent;
-
-                    default:
-                        return null;
-                }
-            }).Where(e => e != null).ToArray();
-
+            var result = dbEntities.Select(e => e.ToBaseItemEvent()).Where(e => e != null).ToArray();
             return result;
         }
     }

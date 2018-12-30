@@ -24,6 +24,8 @@ namespace Orlenko.EventSourcing.Example.Repository
             {
                 await this.eventsStore.AddEventAsync(evt);
             }
+
+            aggregate.Commit();
         }
 
         public async Task<IEnumerable<ItemAggregate>> GetByNameAsync(string name)
@@ -55,12 +57,6 @@ namespace Orlenko.EventSourcing.Example.Repository
             return result;
         }
 
-        public Task RollbackChangesAsync(ItemAggregate aggregate)
-        {
-            // Still have no idea here... (
-            return Task.CompletedTask;
-        }
-        
         private ItemAggregate RestoreAggregateFromEvents(Guid aggregateId, IEnumerable<BaseItemEvent> events)
         {
             var result = new ItemAggregate(aggregateId);

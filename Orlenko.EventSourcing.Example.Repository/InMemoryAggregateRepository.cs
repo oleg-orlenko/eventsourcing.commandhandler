@@ -43,6 +43,8 @@ namespace Orlenko.EventSourcing.Example.Repository
                     this.aggregatesCollection.TryRemove(aggregate.Id, out ItemAggregate agg);
                     break;
             }
+
+            aggregate.Commit();
         }
 
         public Task<IEnumerable<ItemAggregate>> GetByNameAsync(string name)
@@ -66,12 +68,6 @@ namespace Orlenko.EventSourcing.Example.Repository
 
             result = aggregatesCollection[id];
             return Task.FromResult(result);
-        }
-
-        public Task RollbackChangesAsync(ItemAggregate aggregate)
-        {
-            // No idea how to implement this for now
-            return Task.CompletedTask;
         }
     }
 }

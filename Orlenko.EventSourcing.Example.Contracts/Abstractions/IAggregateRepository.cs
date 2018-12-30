@@ -12,7 +12,5 @@ namespace Orlenko.EventSourcing.Example.Contracts.Abstractions
         Task<IEnumerable<TAgg>> GetByNameAsync(string name);
 
         Task CommitChangesAsync(TAgg aggregate);
-
-        Task RollbackChangesAsync(TAgg aggregate);
     }
 }
