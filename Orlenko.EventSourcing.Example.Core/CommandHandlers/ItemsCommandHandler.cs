@@ -41,17 +41,17 @@ namespace Orlenko.EventSourcing.Example.Core.CommandHandlers
                 {
                     case CreateItemCommand create:
                         collection = await this.repository.GetAsync(cancellationToken);
-                        mutated = collection.Add(create.Item);
+                        mutated = collection.WithSecurityScope(create.UserName).Add(create.Item);
                         break;
 
                     case DeleteItemCommand delete:
                         collection = await this.repository.GetAsync(cancellationToken);
-                        mutated = collection.GetById(delete.ItemId).Match(false, item => collection.Remove(item));
+                        mutated = collection.GetById(delete.ItemId).Match(false, item => collection.WithSecurityScope(delete.UserName).Remove(item));
                         break;
 
                     case UpdateItemCommand update:
                         collection = await this.repository.GetAsync(cancellationToken);
-                        mutated = collection.Remove(update.Item) && collection.Add(update.Item);
+                        mutated = collection.WithSecurityScope(update.UserName).Update(update.Item);
                         break;
 
                     default:

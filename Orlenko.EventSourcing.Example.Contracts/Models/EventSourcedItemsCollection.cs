@@ -16,24 +16,25 @@ namespace Orlenko.EventSourcing.Example.Contracts.Models
 
         public EventSourcedItemsCollection(IEnumerable<Item> items) : base(items)
         {
-            appliedEvents = new LinkedList<BaseEvent<Item>>();
+            this.appliedEvents = new LinkedList<BaseEvent<Item>>();
+            this.userName = "Unknown";
         }
 
         public override bool Add(Item item)
         {
-            var evt = new ItemCreatedEvent(item, "unknown", Guid.NewGuid(), DateTime.UtcNow);
+            var evt = new ItemCreatedEvent(item, this.userName, Guid.NewGuid(), DateTime.UtcNow);
             return ApplyEvent(evt);
         }
 
         public override bool Remove(Item item)
         {
-            var evt = new ItemDeletedEvent(item, "unknown", Guid.NewGuid(), DateTime.UtcNow);
+            var evt = new ItemDeletedEvent(item, this.userName, Guid.NewGuid(), DateTime.UtcNow);
             return ApplyEvent(evt);
         }
 
         public override bool Update(Item newState)
         {
-            var evt = new ItemUpdatedEvent(newState, "unknown", Guid.NewGuid(), DateTime.UtcNow);
+            var evt = new ItemUpdatedEvent(newState, this.userName, Guid.NewGuid(), DateTime.UtcNow);
             return ApplyEvent(evt);
         }
 

@@ -10,6 +10,8 @@ namespace Orlenko.EventSourcing.Example.Domain
     {
         protected readonly HashSet<TEntity> list;
 
+        protected string userName;
+
         public IEnumerable<TEntity> All => list.AsEnumerable();
 
         public int Count => throw new NotImplementedException();
@@ -22,6 +24,12 @@ namespace Orlenko.EventSourcing.Example.Domain
                 throw new ArgumentNullException(nameof(items));
 
             this.list = new HashSet<TEntity>(items);
+        }
+
+        public GenericCollection<TEntity> WithSecurityScope(string userName)
+        {
+            this.userName = userName;
+            return this;
         }
 
         public IOption<TEntity> GetById(Guid id)

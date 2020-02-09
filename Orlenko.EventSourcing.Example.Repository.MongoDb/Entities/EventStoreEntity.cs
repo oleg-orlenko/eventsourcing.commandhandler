@@ -10,8 +10,6 @@ namespace Orlenko.EventSourcing.Example.Repository.MongoDb.Entities
 
         public string Type { get; set; }
 
-        public int Version { get; set; }
-
         public string UserName { get; set; }
         
         public Guid ItemId { get; set; }

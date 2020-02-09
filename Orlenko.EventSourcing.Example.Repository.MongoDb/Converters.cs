@@ -1,4 +1,5 @@
 ﻿using Orlenko.EventSourcing.Example.Contracts.Models;
+using Orlenko.EventSourcing.Example.Domain;
 using Orlenko.EventSourcing.Example.Domain.Events;
 using Orlenko.EventSourcing.Example.Repository.MongoDb.Entities;
 using System;
@@ -7,39 +8,42 @@ namespace Orlenko.EventSourcing.Example.Repository.MongoDb
 {
     public static class Converters
     {
-        public static BaseItemEvent ToBaseItemEvent(this EventStoreEntity e)
+        public static BaseEvent<Item> ToBaseItemEvent(this EventStoreEntity e)
         {
             switch (e.Type)
             {
                 case nameof(ItemCreatedEvent):
-                    return new ItemCreatedEvent(e.ItemId, e.ItemName, e.UserName, e.EventId, e.EventDate, e.Version) as BaseItemEvent;
+                    var createdItem = new Item(e.ItemId, e.ItemName);
+                    return new ItemCreatedEvent(createdItem, e.UserName, e.EventId, e.EventDate);
 
                 case nameof(ItemDeletedEvent):
-                    return new ItemDeletedEvent(e.ItemId, e.UserName, e.EventId, e.EventDate, e.Version) as BaseItemEvent;
+                    var deletedItem = new Item(e.ItemId, e.ItemName);
+                    return new ItemDeletedEvent(deletedItem, e.UserName, e.EventId, e.EventDate);
 
                 case nameof(ItemUpdatedEvent):
-                    return new ItemUpdatedEvent(e.ItemId, e.ItemName, e.UserName, e.EventId, e.EventDate, e.Version) as BaseItemEvent;
+                    var updatedItem = new Item(e.ItemId, e.ItemName);
+                    return new ItemUpdatedEvent(updatedItem, e.UserName, e.EventId, e.EventDate);
 
                 default:
                     return null;
             }
         }
 
-        public static EventStoreEntity ToEventStoreEntity(this BaseItemEvent evt)
+        public static EventStoreEntity ToEventStoreEntity(this BaseEvent<Item> evt)
         {
             var entity = new EventStoreEntity();
             switch (evt)
             {
                 case ItemCreatedEvent created:
                     entity.Type = nameof(ItemCreatedEvent);
-                    entity.ItemName = created.Name;
+                    entity.ItemName = created.Item.Name;
                     break;
                 case ItemDeletedEvent deleted:
                     entity.Type = nameof(ItemDeletedEvent);
                     break;
                 case ItemUpdatedEvent updated:
                     entity.Type = nameof(ItemUpdatedEvent);
-                    entity.ItemName = updated.Name;
+                    entity.ItemName = updated.Item.Name;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException($"Specified type {evt.GetType()} is not supported");
@@ -47,31 +51,10 @@ namespace Orlenko.EventSourcing.Example.Repository.MongoDb
 
             entity.EventId = evt.EventId;
             entity.EventDate = evt.EventDate;
-            entity.ItemId = evt.ItemId;
+            entity.ItemId = evt.Item.Id;
             entity.UserName = evt.UserName;
-            entity.Version = evt.Version;
 
             return entity;
-        }
-
-        public static ItemAggregate ToItemAggregate(this ItemAggregateSnapshotEntity e)
-        {
-            var lastEvent = e.LastEvent?.ToBaseItemEvent();
-            var result = new ItemAggregate(e.ItemId, e.Name, lastEvent);
-            return result;
-        }
-
-        public static ItemAggregateSnapshotEntity ToSnapshotEntity(this ItemAggregate aggregate)
-        {
-            var lastEvent = aggregate.LastEvent as BaseItemEvent;
-            var result = new ItemAggregateSnapshotEntity
-            {
-                ItemId = aggregate.Id,
-                LastEvent = lastEvent?.ToEventStoreEntity(),
-                Name = aggregate.Name
-            };
-
-            return result;
         }
     }
 }

@@ -6,12 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Orlenko.EventSourcing.Example.Authentication;
 using Orlenko.EventSourcing.Example.Authorization;
 using Orlenko.EventSourcing.Example.Contracts.Abstractions;
-using Orlenko.EventSourcing.Example.Contracts.Models;
-using Orlenko.EventSourcing.Example.Core.Aggregates;
 using Orlenko.EventSourcing.Example.Core.CommandHandlers;
+using Orlenko.EventSourcing.Example.Domain;
 using Orlenko.EventSourcing.Example.Domain.Events;
 using Orlenko.EventSourcing.Example.EventPublishers;
-using Orlenko.EventSourcing.Example.Repository;
 using Orlenko.EventSourcing.Example.Repository.MongoDb;
 using Orlenko.EventSourcing.Example.Repository.MongoDb.Configuration;
 
@@ -39,23 +37,20 @@ namespace Orlenko.EventSourcing.Example
             services.AddSingleton<IAuthorizationHandler, CustomAuthorizationHandler>();
 
             services.AddCors();
-            //services.AddSingleton<IEventsStore<BaseItemEvent>, InMemoryEventStore>();
-            //services.AddTransient<IEventsStore<BaseItemEvent>, InFileEventStore>();
+            //services.AddSingleton<IEventsStore<BaseEvent<Item>>, InMemoryEventStore>();
+            //services.AddTransient<IEventsStore<BaseEvent<Item>>, InFileEventStore>();
             var mongoConfigSection = this.config.GetSection("mongoDB");
             var mongoEventsConfig = new MongoEventsConfig(mongoConfigSection);
             var mongoSnapshotsConfig = new MongoSnapshotsConfig(mongoConfigSection);
             services.AddSingleton(mongoEventsConfig);
             services.AddSingleton(mongoSnapshotsConfig);
-            services.AddTransient<IEventsStore<BaseItemEvent>, MongoEventsStore>();
+            services.AddTransient<IEventsStore<BaseEvent<Item>>, MongoEventsStore>();
 
             //services.AddSingleton<IAggregateRepository<ItemAggregate>, InMemoryAggregateRepository>();
             //services.AddTransient<IAggregateRepository<ItemAggregate>, InlineRestoreAggregateRepository>();
-            services.AddTransient<IAggregateRepository<ItemAggregate>, PerformantInlineRestoreAggregateRepository>();
-            services.AddTransient<ISnapshotsRepository<ItemAggregate>, MongoSnapshotsRepository>();
 
             services.AddTransient<ICommandHandler, ItemsCommandHandler>();
-            services.AddTransient<IEventsPublisher, MockEventPublisher>();
-            services.AddSingleton<AggregateRoot>();
+            services.AddTransient<IEventsPublisher<BaseEvent<Item>>, MockEventPublisher>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

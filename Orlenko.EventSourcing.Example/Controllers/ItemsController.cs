@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Orlenko.EventSourcing.Example.Contracts.Abstractions;
 using Orlenko.EventSourcing.Example.Contracts.Commands;
-using Orlenko.EventSourcing.Example.Contracts.Exceptions;
-using Orlenko.EventSourcing.Example.Contracts.Models;
+using Orlenko.EventSourcing.Example.Domain;
 using Orlenko.EventSourcing.Example.ViewModels;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Orlenko.EventSourcing.Example.Controllers
@@ -22,35 +22,26 @@ namespace Orlenko.EventSourcing.Example.Controllers
             this.commandHandler = commandHandler;
         }
 
+        [HttpGet("process/{id}", Name = "ProcessState")]
+        public async Task<IActionResult> GetProcessStateAsync(Guid id, CancellationToken cancellationToken)
+        {
+            // TODO
+            return this.Ok();
+        }
+
         [HttpPost]
-        public async Task<IActionResult> CreateItemAsync([FromBody]ItemCreateViewModel item)
+        public async Task<IActionResult> CreateItemAsync([FromBody]ItemCreateViewModel item, CancellationToken cancellationToken)
         {
             if (item == null)
             {
                 return BadRequest();
             }
 
-            try
-            {
-                var itemModel = new ItemModel(Guid.NewGuid(), item.Name);
-                var command = new CreateItemCommand(itemModel, User.Identity.Name);
-                var evt = await commandHandler.HandleAsync(command);
-                var getViewModel = new ItemViewModel
-                {
-                    ItemId = itemModel.Id,
-                    Name = itemModel.Name,
-                    Created = evt.EventDate,
-                    Updated = evt.EventDate,
-                    CreatedBy = evt.UserName,
-                    UpdatedBy = evt.UserName
-                };
-                // Can't return Created with Location, because this service does not now where this item can be accessed :( 
-                return Ok(getViewModel);
-            }
-            catch (ItemAlreadyExistsException e)
-            {
-                return this.BadRequest(e.Message);
-            }
+            var itemModel = new Item(Guid.NewGuid(), item.Name);
+            var command = new CreateItemCommand(itemModel, User.Identity.Name);
+            await commandHandler.HandleAsync(command, cancellationToken);
+
+            return AcceptedAtAction("ProcessState", new { id = "TODO" });
         }
 
         [HttpPut("{itemId}")]
@@ -61,36 +52,18 @@ namespace Orlenko.EventSourcing.Example.Controllers
                 return BadRequest();
             }
 
-            try
-            {
-                var itemModel = new ItemModel(itemId, item.Name);
-                var command = new UpdateItemCommand(itemModel, User.Identity.Name);
-                await commandHandler.HandleAsync(command);
-                return NoContent();
-            }
-            catch (ItemNotFoundException)
-            {
-                return this.NotFound();
-            }
-            catch (ItemAlreadyExistsException e)
-            {
-                return this.BadRequest(e.Message);
-            }
+            var itemModel = new Item(itemId, item.Name);
+            var command = new UpdateItemCommand(itemModel, User.Identity.Name);
+            await commandHandler.HandleAsync(command);
+            return NoContent();
         }
 
         [HttpDelete("{itemId}")]
         public async Task<IActionResult> DeleteItemAsync(Guid itemId)
         {
-            try
-            {
-                var command = new DeleteItemCommand(itemId, User.Identity.Name);
-                await commandHandler.HandleAsync(command);
-                return NoContent();
-            }
-            catch (ItemNotFoundException)
-            {
-                return this.NotFound();
-            }
+            var command = new DeleteItemCommand(itemId, User.Identity.Name);
+            await commandHandler.HandleAsync(command);
+            return NoContent();
         }
     }
 }
