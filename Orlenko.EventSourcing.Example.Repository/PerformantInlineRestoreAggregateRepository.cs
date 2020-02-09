@@ -1,6 +1,6 @@
 ﻿using Orlenko.EventSourcing.Example.Contracts.Abstractions;
-using Orlenko.EventSourcing.Example.Contracts.Events;
 using Orlenko.EventSourcing.Example.Contracts.Models;
+using Orlenko.EventSourcing.Example.Domain.Events;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

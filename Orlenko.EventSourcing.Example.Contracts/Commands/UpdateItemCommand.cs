@@ -1,15 +1,15 @@
-﻿using Orlenko.EventSourcing.Example.Contracts.Models;
+﻿using Orlenko.EventSourcing.Example.Domain;
 using System;
 
 namespace Orlenko.EventSourcing.Example.Contracts.Commands
 {
     public class UpdateItemCommand : BaseItemCommand
     {
-        public readonly ItemModel Item;
+        public readonly Item Item;
 
-        public UpdateItemCommand(ItemModel item, string userName) : base(userName)
+        public UpdateItemCommand(Item item, string userName) : base(userName)
         {
-            Item = item ?? throw new ArgumentNullException(nameof(item));
+            this.Item = item ?? throw new ArgumentNullException(nameof(item));
         }
     }
 }

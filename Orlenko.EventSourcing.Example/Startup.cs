@@ -6,11 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Orlenko.EventSourcing.Example.Authentication;
 using Orlenko.EventSourcing.Example.Authorization;
 using Orlenko.EventSourcing.Example.Contracts.Abstractions;
-using Orlenko.EventSourcing.Example.Contracts.Events;
 using Orlenko.EventSourcing.Example.Contracts.Models;
 using Orlenko.EventSourcing.Example.Core.Aggregates;
 using Orlenko.EventSourcing.Example.Core.CommandHandlers;
-using Orlenko.EventSourcing.Example.Core.EventPublishers;
+using Orlenko.EventSourcing.Example.Domain.Events;
+using Orlenko.EventSourcing.Example.EventPublishers;
 using Orlenko.EventSourcing.Example.Repository;
 using Orlenko.EventSourcing.Example.Repository.MongoDb;
 using Orlenko.EventSourcing.Example.Repository.MongoDb.Configuration;
@@ -53,7 +53,7 @@ namespace Orlenko.EventSourcing.Example
             services.AddTransient<IAggregateRepository<ItemAggregate>, PerformantInlineRestoreAggregateRepository>();
             services.AddTransient<ISnapshotsRepository<ItemAggregate>, MongoSnapshotsRepository>();
 
-            services.AddTransient<ICommandHandler, DefaultCommandHandler>();
+            services.AddTransient<ICommandHandler, ItemsCommandHandler>();
             services.AddTransient<IEventsPublisher, MockEventPublisher>();
             services.AddSingleton<AggregateRoot>();
         }

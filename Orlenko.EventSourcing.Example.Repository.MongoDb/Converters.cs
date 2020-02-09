@@ -1,5 +1,5 @@
-﻿using Orlenko.EventSourcing.Example.Contracts.Events;
-using Orlenko.EventSourcing.Example.Contracts.Models;
+﻿using Orlenko.EventSourcing.Example.Contracts.Models;
+using Orlenko.EventSourcing.Example.Domain.Events;
 using Orlenko.EventSourcing.Example.Repository.MongoDb.Entities;
 using System;
 

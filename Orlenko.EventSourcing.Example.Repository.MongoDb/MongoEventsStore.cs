@@ -1,6 +1,6 @@
 ﻿using MongoDB.Driver;
 using Orlenko.EventSourcing.Example.Contracts.Abstractions;
-using Orlenko.EventSourcing.Example.Contracts.Events;
+using Orlenko.EventSourcing.Example.Domain.Events;
 using Orlenko.EventSourcing.Example.Repository.MongoDb.Configuration;
 using Orlenko.EventSourcing.Example.Repository.MongoDb.Entities;
 using System;

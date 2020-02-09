@@ -8,7 +8,7 @@ namespace Orlenko.EventSourcing.Example.Contracts.Commands
 
         public DeleteItemCommand(Guid itemId, string userName) : base(userName)
         {
-            ItemId = itemId;
+            this.ItemId = itemId;
         }
     }
 }

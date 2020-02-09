@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.106
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orlenko.EventSourcing.Example", "Orlenko.EventSourcing.Example\Orlenko.EventSourcing.Example.csproj", "{1965E40F-1636-4E79-8CD7-0BAE95F5AED1}"
 EndProject
@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts.Tests", "Tests\Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Tests", "Tests\Core.Tests\Core.Tests.csproj", "{CA1F7008-706F-4427-AAF5-F3B5B5BAB158}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orlenko.EventSourcing.Example.Repository.MongoDb", "Orlenko.EventSourcing.Example.Repository.MongoDb\Orlenko.EventSourcing.Example.Repository.MongoDb.csproj", "{59C8D8F8-1789-4E0A-B874-48E8937A57E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orlenko.EventSourcing.Example.Repository.MongoDb", "Orlenko.EventSourcing.Example.Repository.MongoDb\Orlenko.EventSourcing.Example.Repository.MongoDb.csproj", "{59C8D8F8-1789-4E0A-B874-48E8937A57E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orlenko.EventSourcing.Example.Domain", "Orlenko.EventSourcing.Example.Domain\Orlenko.EventSourcing.Example.Domain.csproj", "{250EB82C-C729-4FBF-93EF-3B0FE94FF8BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{59C8D8F8-1789-4E0A-B874-48E8937A57E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59C8D8F8-1789-4E0A-B874-48E8937A57E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59C8D8F8-1789-4E0A-B874-48E8937A57E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{250EB82C-C729-4FBF-93EF-3B0FE94FF8BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{250EB82C-C729-4FBF-93EF-3B0FE94FF8BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{250EB82C-C729-4FBF-93EF-3B0FE94FF8BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{250EB82C-C729-4FBF-93EF-3B0FE94FF8BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
